@@ -15,13 +15,13 @@ function pingDatabaseUntilConnected() {
           client.end();
           process.exit(0);
         })
-        .catch(e => {
-          console.error(`Database not yet available: ${error.message}`);
+        .catch(err => {
+          console.error(`Database not yet available: ${err.message}`);
           setTimeout(pingDatabaseUntilConnected, 5000);
         });
     })
     .catch(err => {
-      console.error(`Database not yet available: ${error.message}`);
+      console.error(`Database not yet available: ${err.message}`);
       setTimeout(pingDatabaseUntilConnected, 5000);
     });
 }
