@@ -1,21 +1,48 @@
 #!/usr/bin/env node
-
-var mysql      = require('mysql');
+const { Client } = require('pg');
 var envValues  = require('./common/env-values');
-
-console.error(`Awaiting MySQL database…`);
+console.error(`Awaiting Postgres database…`);
 pingDatabaseUntilConnected();
 
 function pingDatabaseUntilConnected() {
-  var connection = mysql.createConnection(envValues.mysqlDatabaseUrl);
-  connection.query('SELECT 1', function (error, results, fields) {
-    if (error) {
+  const client = new Client({ connectionString: envValues.postgreDatabaseUrl });
+  client.connect()
+    .then(() => {
+
+      client.query('SELECT NOW()')
+        .then(() => {
+          console.error('Database connected.');
+          client.end();
+          process.exit(0);
+        })
+        .catch(e => {
+          console.error(`Database not yet available: ${error.message}`);
+          setTimeout(pingDatabaseUntilConnected, 5000);
+        });
+    })
+    .catch(err => {
       console.error(`Database not yet available: ${error.message}`);
       setTimeout(pingDatabaseUntilConnected, 5000);
-    } else {
-      console.error('Database connected.');
-      connection.end();
-      process.exit(0);
-    }
-  });
+    });
 }
+
+
+
+// var mysql      = require('mysql');
+
+// console.error(`Awaiting MySQL database…`);
+// pingDatabaseUntilConnected();
+
+// function pingDatabaseUntilConnected() {
+//   var connection = mysql.createConnection(envValues.mysqlDatabaseUrl);
+//   connection.query('SELECT 1', function (error, results, fields) {
+//     if (error) {
+//       console.error(`Database not yet available: ${error.message}`);
+//       setTimeout(pingDatabaseUntilConnected, 5000);
+//     } else {
+//       console.error('Database connected.');
+//       connection.end();
+//       process.exit(0);
+//     }
+//   });
+// }

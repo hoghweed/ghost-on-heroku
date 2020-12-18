@@ -85,11 +85,15 @@ function createConfig() {
     },
     fileStorage: fileStorage,
     storage: storage,
+    // database: {
+    //   client: 'mysql',
+    //   connection: getMysqlConfig(envValues.mysqlDatabaseUrl),
+    //   pool: { min: 0, max: 5 },
+    //   debug: false
+    // },
     database: {
-      client: 'mysql',
-      connection: getMysqlConfig(envValues.mysqlDatabaseUrl),
-      pool: { min: 0, max: 5 },
-      debug: false
+      client: 'postgres',
+      connection: getDatabaseConfig(envValues.postgreDatabaseUrl)
     },
     server: {
       host: '0.0.0.0',
@@ -103,7 +107,7 @@ function createConfig() {
   return config;
 }
 
-function getMysqlConfig(connectionUrl) {
+function getDatabaseConfig(connectionUrl) {
   if (connectionUrl == null) {
     return {};
   }
